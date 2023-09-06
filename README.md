@@ -1,6 +1,7 @@
 # tetris_game
 
 A new Flutter project.
+The Flutter Tetris Game is an engaging mobile gaming application built with the Flutter framework. It brings the classic Tetris experience to your fingertips, providing hours of entertainment and challenging gameplay. With intuitive touch controls and colorful graphics, players can rotate and fit falling blocks to clear lines and achieve high scores. This addictive puzzle game offers a delightful way to test your reflexes, strategy, and problem-solving skills on your mobile device, all while enjoying a modern and visually appealing interface.
 
 ## Getting Started
 
