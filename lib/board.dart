@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:tetris_game/piece.dart';
 import 'package:tetris_game/values.dart';
-
 import 'pixel.dart';
 
 /*
@@ -23,10 +20,11 @@ List<List<Tetromino?>> gameBoard = List.generate(
     (i) => List.generate(
           rowLength,
           (j) => null,
-        ));
+         ),
+        );
 
 class GameBoard extends StatefulWidget {
-  GameBoard({super.key});
+  const GameBoard({super.key});
 
   @override
   State<GameBoard> createState() => _GameBoardState();
@@ -48,7 +46,7 @@ class _GameBoardState extends State<GameBoard> {
     currentPiece.initializedPiece();
     //frame refresh rate\
 
-    Duration frameRate = const Duration(milliseconds: 400);
+    Duration frameRate = const Duration(milliseconds: 100);
     gameLoop(frameRate);
   }
 
@@ -57,6 +55,9 @@ class _GameBoardState extends State<GameBoard> {
   void gameLoop(Duration frameRate) {
     Timer.periodic(frameRate, (timer) {
       setState(() {
+
+        
+
         checkLanding();
 
         //move piece down'
@@ -67,7 +68,9 @@ class _GameBoardState extends State<GameBoard> {
 
   //collision detection
   bool checkCollision(Direction direction) {
+    //
     for (int i = 0; i < currentPiece.position.length; i++) {
+      //
       int row = (currentPiece.position[i] / rowLength).floor();
       int col = currentPiece.position[i] % rowLength;
 
@@ -81,7 +84,7 @@ class _GameBoardState extends State<GameBoard> {
 
       //check out of bounds
 
-      if (row >= colLenght || col < 0 || col >= rowLength) {
+       if (row >= colLenght || col < 0 || col >= rowLength) {
         return true;
       }
     }
@@ -89,7 +92,9 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   void checkLanding() {
+    //if it's down is occupied
     if (checkCollision(Direction.down)) {
+      //mark position as occupaed on the gameboard
       for (int i = 0; i < currentPiece.position.length; i++) {
         int row = (currentPiece.position[i] / rowLength).floor();
         int col = currentPiece.position[i] % rowLength;
