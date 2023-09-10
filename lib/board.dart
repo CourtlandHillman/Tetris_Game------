@@ -38,7 +38,7 @@ class _GameBoardState extends State<GameBoard> {
   int colLength = 15;
 
   //==================current tetris piece=================
-  Piece currentPiece = Piece(type: Tetromino.S);
+  Piece currentPiece = Piece(type: Tetromino.L);
 
   @override
   void initState() {
@@ -139,19 +139,32 @@ class _GameBoardState extends State<GameBoard> {
     currentPiece.initializedPiece();
   }
 
-
-
   //=============move left=============================================
-  void moveLeft(){
-    
+  void moveLeft() {
+    //==============checking empty and free space for moving piece======
+    if (!checkCollision(Direction.left)) {
+      setState(() {
+        currentPiece.movePiece(Direction.left);
+      });
+    }
   }
+
   //=============move Rotate=============================================
-  void rotatePiece(){
-    
+  void rotatePiece() {
+    //==============checking empty and free space for moving piece======
+    setState(() {
+      currentPiece.rotatePiece();
+    });
   }
+
   //=============move Right=============================================
-  void moveRight(){
-    
+  void moveRight() {
+    //==============checking empty and free space for moving piece======
+    if (!checkCollision(Direction.right)) {
+      setState(() {
+        currentPiece.movePiece(Direction.right);
+      });
+    }
   }
 
   @override
@@ -169,7 +182,7 @@ class _GameBoardState extends State<GameBoard> {
                 itemBuilder: (context, index) {
                   int row = (index / rowLenght).floor();
                   int col = index % rowLenght;
-          
+
                   //=============current piece================
                   if (currentPiece.position.contains(index)) {
                     return Pixel(
@@ -194,7 +207,6 @@ class _GameBoardState extends State<GameBoard> {
                   }
                 }),
           ),
-
           Padding(
             padding: const EdgeInsets.all(50.0),
             child: Row(
@@ -204,30 +216,28 @@ class _GameBoardState extends State<GameBoard> {
                 IconButton(
                   onPressed: moveLeft,
                   color: Colors.white,
-                  icon: Icon(Icons.arrow_circle_left,
+                  icon: Icon(
+                    Icons.arrow_circle_left,
                   ),
-                  ),
-          
-          
-          
-          
+                ),
+
                 //=======================ROTATE=========================
                 IconButton(
-                  onPressed: rotatePiece, 
+                  onPressed: rotatePiece,
                   color: Colors.white,
-                  icon: Icon(Icons.rotate_right,
+                  icon: Icon(
+                    Icons.rotate_right,
                   ),
-                  ),
-          
-          
+                ),
+
                 //========================RIGHT=========================
                 IconButton(
-                  onPressed: moveRight, 
+                  onPressed: moveRight,
                   color: Colors.white,
-                  icon: Icon(Icons.arrow_circle_right,
+                  icon: Icon(
+                    Icons.arrow_circle_right,
                   ),
-                  ),
-          
+                ),
               ],
             ),
           ),
