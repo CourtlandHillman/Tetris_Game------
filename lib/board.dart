@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:tetris_game/piece.dart';
+import 'package:tetris_game/pixel.dart';
 import 'package:tetris_game/values.dart';
-import 'pixel.dart';
 
 /*
 GAME BOARD
@@ -14,15 +14,15 @@ A non empty space will have the color representative the landed pieces
 
 */
 
-//game board
-
 List<List<Tetromino?>> gameBoard = List.generate(
-    colLenght,
-    (i) => List.generate(
-          rowLength,
-          (j) => null,
-         ),
-        );
+  colLenght,
+  (i) => List.generate(
+    rowLength,
+    (j) => null,
+  ),
+);
+
+//====================game board==========================
 
 class GameBoard extends StatefulWidget {
   const GameBoard({super.key});
@@ -32,48 +32,51 @@ class GameBoard extends StatefulWidget {
 }
 
 class _GameBoardState extends State<GameBoard> {
-  //current tetris piece
-  Piece currentPiece = Piece(type: Tetromino.T);
+  //====================grid dimmenssion===================
+
+  int rowLenght = 10;
+  int colLength = 15;
+
+  //==================current tetris piece=================
+  Piece currentPiece = Piece(type: Tetromino.S);
 
   @override
   void initState() {
     super.initState();
 
-    //start game
+    //========================start game===================
     startGame();
   }
 
   void startGame() {
     currentPiece.initializedPiece();
-    //frame refresh rate\
 
-    Duration frameRate = const Duration(milliseconds: 100);
+    //================frame refresh========================
+    Duration frameRate = const Duration(milliseconds: 200);
     gameLoop(frameRate);
   }
 
-  //gameloop
-
+  //=============GAMELOOP==================================
   void gameLoop(Duration frameRate) {
     Timer.periodic(frameRate, (timer) {
       setState(() {
-
-        
-
+        //=================check landing========================
         checkLanding();
 
-        //move piece down'
+        //====================move===============================
         currentPiece.movePiece(Direction.down);
       });
     });
   }
 
-  //collision detection
+  //==============Check Collision in a future possition======
   bool checkCollision(Direction direction) {
-    //
     for (int i = 0; i < currentPiece.position.length; i++) {
-      //
-      int row = (currentPiece.position[i] / rowLength).floor();
-      int col = currentPiece.position[i] % rowLength;
+      //=======row and column current position formuls
+      int row = (currentPiece.position[i] / rowLenght).floor();
+      int col = currentPiece.position[i] % rowLenght;
+
+      // ========adjust the row and col based on the direction
 
       if (direction == Direction.left) {
         col -= 1;
@@ -82,33 +85,53 @@ class _GameBoardState extends State<GameBoard> {
       } else if (direction == Direction.down) {
         row += 1;
       }
-
-      //check out of bounds
-
-       if (row >= colLenght || col < 0 || col >= rowLength) {
+      //=========if piece out of bounds==================
+      if (row >= colLength || col < 0 || col >= rowLenght) {
         return true;
       }
     }
+    //============if no collision detected =================
     return false;
   }
 
   void checkLanding() {
-    //if it's down is occupied
-    if (checkCollision(Direction.down)) {
-      //mark position as occupaed on the gameboard
+    // if going down is occupied or landed on other pieces
+    if (checkCollision(Direction.down) || checkLanded()) {
+      // mark position as occupied on the game board
       for (int i = 0; i < currentPiece.position.length; i++) {
         int row = (currentPiece.position[i] / rowLength).floor();
         int col = currentPiece.position[i] % rowLength;
+
         if (row >= 0 && col >= 0) {
           gameBoard[row][col] = currentPiece.type;
         }
       }
+
+      // once landed, create the next piece
       createNewPiece();
     }
   }
 
+  bool checkLanded() {
+    // loop through each position of the current piece
+    for (int i = 0; i < currentPiece.position.length; i++) {
+      int row = (currentPiece.position[i] / rowLength).floor();
+      int col = currentPiece.position[i] % rowLength;
+
+      // check if the cell below is already occupied
+      if (row + 1 < colLength && row >= 0 && gameBoard[row + 1][col] != null) {
+        return true; // collision with a landed piece
+      }
+    }
+
+    return false; // no collision with landed pieces
+  }
+
   void createNewPiece() {
+    //====================create random type=========================
     Random rand = Random();
+
+    //====================create new piiece==========================
 
     Tetromino randomType =
         Tetromino.values[rand.nextInt(Tetromino.values.length)];
@@ -121,34 +144,38 @@ class _GameBoardState extends State<GameBoard> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: GridView.builder(
-        itemCount: rowLength * colLenght,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: rowLength),
-        itemBuilder: (context, index) {
-          int row = (index / rowLength).floor();
-          int col = index % rowLength;
+          itemCount: rowLenght * colLength,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: rowLenght),
+          itemBuilder: (context, index) {
 
-          //current piece
-          if (currentPiece.position.contains(index)) {
-            return Pixel(
-              color: Colors.yellow,
-              child: index,
-            );
-          }
-          //landed piece
-          else if (gameBoard[row][col] != null) {
-            return Pixel(color: Colors.pink, child: '');
-          }
-          //blank pixel
-          else {
-            return Pixel(
-              color: Colors.grey[900],
-              child: index,
-            );
-          }
-        },
-      ),
+        int row = (index / rowLenght).floor();
+        int col =index % rowLenght;
+
+
+            //=============current piece================
+            if (currentPiece.position.contains(index)) {
+              return Pixel(
+                color: Colors.yellow,
+                child: index,
+              );
+            }
+            //===============landed piece=============
+            else if(gameBoard[row][col] != null) {
+              return Pixel(
+                color: Colors.pink[900],
+                child: '',
+              );
+            }
+             //=============black piece================
+            else {
+              return Pixel(
+                color: Colors.grey[900],
+                child: index,
+              );
+            }
+          }),
     );
   }
 }

@@ -71,7 +71,7 @@ class Piece {
     }
   }
 
-  //move
+  //===================move============================
   void movePiece(Direction direction) {
     switch (direction) {
       case Direction.down:
@@ -81,12 +81,12 @@ class Piece {
         break;
         case Direction.right:
         for (int i = 0; i < position.length; i++) {
-          position[i] += rowLength;
+          position[i] += 1;
         }
         break;
         case Direction.left:
         for (int i = 0; i < position.length; i++) {
-          position[i] -= rowLength;
+          position[i] -= 1;
         }
         break;
       default:
