@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:tetris_game/values.dart';
 
 class Piece {
@@ -6,6 +8,11 @@ class Piece {
   Piece({required this.type});
 
   List<int> position = [];
+
+  //===========COLOR===========================
+  Color get color {
+    return tetrominoColors[type] ?? const Color(0xFFFFFFFF);
+  }
 
   void initializedPiece() {
     switch (type) {
@@ -65,9 +72,8 @@ class Piece {
           -15,
         ];
         break;
-      
-      default:
 
+      default:
     }
   }
 
@@ -79,12 +85,12 @@ class Piece {
           position[i] += rowLength;
         }
         break;
-        case Direction.right:
+      case Direction.right:
         for (int i = 0; i < position.length; i++) {
           position[i] += 1;
         }
         break;
-        case Direction.left:
+      case Direction.left:
         for (int i = 0; i < position.length; i++) {
           position[i] -= 1;
         }

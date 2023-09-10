@@ -95,9 +95,9 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   void checkLanding() {
-    // if going down is occupied or landed on other pieces
+    // ==========if going down is occupied or landed on other pieces
     if (checkCollision(Direction.down) || checkLanded()) {
-      // mark position as occupied on the game board
+      // =============mark position as occupied on the game board
       for (int i = 0; i < currentPiece.position.length; i++) {
         int row = (currentPiece.position[i] / rowLength).floor();
         int col = currentPiece.position[i] % rowLength;
@@ -107,24 +107,24 @@ class _GameBoardState extends State<GameBoard> {
         }
       }
 
-      // once landed, create the next piece
+      //============= once landed, create the next piece
       createNewPiece();
     }
   }
 
   bool checkLanded() {
-    // loop through each position of the current piece
+    //================ loop through each position of the current piece
     for (int i = 0; i < currentPiece.position.length; i++) {
       int row = (currentPiece.position[i] / rowLength).floor();
       int col = currentPiece.position[i] % rowLength;
 
-      // check if the cell below is already occupied
+      //================ check if the cell below is already occupied
       if (row + 1 < colLength && row >= 0 && gameBoard[row + 1][col] != null) {
         return true; // collision with a landed piece
       }
     }
 
-    return false; // no collision with landed pieces
+    return false; //============= no collision with landed pieces
   }
 
   void createNewPiece() {
@@ -139,43 +139,100 @@ class _GameBoardState extends State<GameBoard> {
     currentPiece.initializedPiece();
   }
 
+
+
+  //=============move left=============================================
+  void moveLeft(){
+    
+  }
+  //=============move Rotate=============================================
+  void rotatePiece(){
+    
+  }
+  //=============move Right=============================================
+  void moveRight(){
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: GridView.builder(
-          itemCount: rowLenght * colLength,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: rowLenght),
-          itemBuilder: (context, index) {
+      body: Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+                itemCount: rowLenght * colLength,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: rowLenght),
+                itemBuilder: (context, index) {
+                  int row = (index / rowLenght).floor();
+                  int col = index % rowLenght;
+          
+                  //=============current piece================
+                  if (currentPiece.position.contains(index)) {
+                    return Pixel(
+                      color: currentPiece.color,
+                      child: index,
+                    );
+                  }
+                  //===============landed piece=============
+                  else if (gameBoard[row][col] != null) {
+                    final Tetromino? tetrominoType = gameBoard[row][col];
+                    return Pixel(
+                      color: tetrominoColors[tetrominoType],
+                      child: '',
+                    );
+                  }
+                  //=============black piece================
+                  else {
+                    return Pixel(
+                      color: Colors.grey[900],
+                      child: index,
+                    );
+                  }
+                }),
+          ),
 
-        int row = (index / rowLenght).floor();
-        int col =index % rowLenght;
-
-
-            //=============current piece================
-            if (currentPiece.position.contains(index)) {
-              return Pixel(
-                color: Colors.yellow,
-                child: index,
-              );
-            }
-            //===============landed piece=============
-            else if(gameBoard[row][col] != null) {
-              return Pixel(
-                color: Colors.pink[900],
-                child: '',
-              );
-            }
-             //=============black piece================
-            else {
-              return Pixel(
-                color: Colors.grey[900],
-                child: index,
-              );
-            }
-          }),
+          Padding(
+            padding: const EdgeInsets.all(50.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                //====================LEFT=============================
+                IconButton(
+                  onPressed: moveLeft,
+                  color: Colors.white,
+                  icon: Icon(Icons.arrow_circle_left,
+                  ),
+                  ),
+          
+          
+          
+          
+                //=======================ROTATE=========================
+                IconButton(
+                  onPressed: rotatePiece, 
+                  color: Colors.white,
+                  icon: Icon(Icons.rotate_right,
+                  ),
+                  ),
+          
+          
+                //========================RIGHT=========================
+                IconButton(
+                  onPressed: moveRight, 
+                  color: Colors.white,
+                  icon: Icon(Icons.arrow_circle_right,
+                  ),
+                  ),
+          
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
