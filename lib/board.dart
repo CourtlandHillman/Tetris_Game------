@@ -39,6 +39,8 @@ class _GameBoardState extends State<GameBoard> {
 
   //==================current tetris piece=================
   Piece currentPiece = Piece(type: Tetromino.L);
+//====================current score=============================
+  int currentScore = 0;
 
   @override
   void initState() {
@@ -60,6 +62,8 @@ class _GameBoardState extends State<GameBoard> {
   void gameLoop(Duration frameRate) {
     Timer.periodic(frameRate, (timer) {
       setState(() {
+        //=====================clear lines======================
+        clearLines();
         //=================check landing========================
         checkLanding();
 
@@ -157,6 +161,32 @@ class _GameBoardState extends State<GameBoard> {
     });
   }
 
+  //====================CLEAR LINES=====================================
+  void clearLines() {
+    for (int row = colLength - 1; row >= 0; row--) {
+      bool rowIsFull = true;
+      for (int col = 0; col < rowLenght; col++) {
+        if (gameBoard[row][col] == null) {
+          rowIsFull = false;
+          break;
+        }
+      }
+      //checking of full row
+      if (rowIsFull) {
+        //move all rows above the cleared row down
+        for (int r = row; r > 0; r--) {
+          //copy above row to  current row
+          gameBoard[r] = List.from(gameBoard[r - 1]);
+        }
+        //set top row empty
+        gameBoard[0] = List.generate(row, (index) => null);
+
+        // increase the score
+        currentScore++;
+      }
+    }
+  }
+
   //=============move Right=============================================
   void moveRight() {
     //==============checking empty and free space for moving piece======
@@ -165,6 +195,15 @@ class _GameBoardState extends State<GameBoard> {
         currentPiece.movePiece(Direction.right);
       });
     }
+  }
+
+  bool isGameOver() {
+    for (int col = 0; col < rowLenght; col++) {
+      if (gameBoard[0][col] != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -207,8 +246,14 @@ class _GameBoardState extends State<GameBoard> {
                   }
                 }),
           ),
+          Text(
+            'Score: $currentScore',
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.all(50.0),
+            padding: const EdgeInsets.only(bottom: 50.0, top: 50.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
