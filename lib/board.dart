@@ -41,6 +41,8 @@ class _GameBoardState extends State<GameBoard> {
   Piece currentPiece = Piece(type: Tetromino.L);
 //====================current score=============================
   int currentScore = 0;
+  //===========game over status==================================
+  bool gameOver = false;
 
   @override
   void initState() {
@@ -67,10 +69,55 @@ class _GameBoardState extends State<GameBoard> {
         //=================check landing========================
         checkLanding();
 
+        //==================checking game status============
+        if (gameOver == true) {
+          timer.cancel();
+          showGameOverDialog();
+        }
+
         //====================move===============================
         currentPiece.movePiece(Direction.down);
       });
     });
+  }
+
+  //game over message
+  void showGameOverDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("GAME OVER"),
+        content: Text("Your score: $currentScore"),
+        actions: [
+          TextButton(
+              onPressed: () {
+                //reset game method================================
+
+                resetGame();
+
+                Navigator.pop(context);
+              },
+              child: Text('Play again'))
+        ],
+      ),
+    );
+  }
+
+  //reset========================
+  void resetGame() {
+    gameBoard = List.generate(
+      colLength,
+      (i) => List.generate(
+        rowLenght,
+        (j) => null,
+      ),
+    );
+
+    gameOver = false;
+    currentScore = 0;
+
+    createNewPiece();
+    startGame();
   }
 
   //==============Check Collision in a future possition======
@@ -141,6 +188,10 @@ class _GameBoardState extends State<GameBoard> {
         Tetromino.values[rand.nextInt(Tetromino.values.length)];
     currentPiece = Piece(type: randomType);
     currentPiece.initializedPiece();
+
+    if (isGameOver()) {
+      gameOver = true;
+    }
   }
 
   //=============move left=============================================
